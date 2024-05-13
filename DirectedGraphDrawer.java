@@ -23,7 +23,7 @@ public class DirectedGraphDrawer extends JPanel {
 
     private boolean[] dfsVisited;//用于在dfs算法中记录顶点是否被访问
 
-    ArrayList<Pair<String, Integer>> allShortestPath;//记录有向图中两点间所有可能的最短路径
+    ArrayList<Pair<String, Integer>> allPath;//记录有向图中两点间所有可能的路径
 
 
     DirectedGraphDrawer(HashMap<String, Integer> index, int[][] graph, ArrayList<String> singleWords) {
@@ -33,7 +33,7 @@ public class DirectedGraphDrawer extends JPanel {
         this.bridgeWordsSentence = "";
         this.shortestPathVertices = new ArrayList<>();
         this.dfsVisited = new boolean[graph.length];
-        this.allShortestPath = new ArrayList<>();
+        this.allPath = new ArrayList<>();
     }
 
     public static void main(String[] args) {
@@ -122,7 +122,7 @@ public class DirectedGraphDrawer extends JPanel {
                     System.out.println("文本已读入并生成有向图！");
                     break;
                 case 2:
-                    frame.setVisible(true);//显示有向图
+                    graphDrawer.showDirectedGraph(graphTemp, frame);//显示有向图
                     saveImage(frame, "directed_graph.png");//将有向图以图片的形式保存到磁盘
                     break;
                 case 3:
@@ -203,23 +203,25 @@ public class DirectedGraphDrawer extends JPanel {
 
     }
 
+    //将图片保存到磁盘
     private static void saveImage(JFrame frame, String fileName) {
         Dimension size = frame.getContentPane().getSize();
-        BufferedImage image = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2 = image.createGraphics();
-        frame.getContentPane().paint(g2);
-        g2.dispose();
+        BufferedImage image = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);//设置图片参数
+        Graphics2D g2 = image.createGraphics();//创建图片对象
+        frame.getContentPane().paint(g2);//将窗口frame上的内容绘制在图片上
+        g2.dispose();//释放资源
         try {
-            ImageIO.write(image, "png", new File(fileName));
+            ImageIO.write(image, "png", new File(fileName));//将图片写入磁盘
             System.out.println("保存成功：" + fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    //重写paintComponent,用于绘制有向图
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+        super.paintComponent(g);//调用父类的paintComponent方法
         Graphics2D g2d = (Graphics2D) g;
 
         // 绘制顶点
@@ -253,17 +255,17 @@ public class DirectedGraphDrawer extends JPanel {
                         ctrlY = (startY + endY) / 2 + Math.abs(endX - startX) / 4; // 控制点y坐标，可以根据需要调整曲线形状
                     }
                     g2d.setColor(Color.BLACK);
-                    QuadCurve2D curve = new QuadCurve2D.Double(startX, startY, ctrlX, ctrlY, endX, endY);
+                    QuadCurve2D curve = new QuadCurve2D.Double(startX, startY, ctrlX, ctrlY, endX, endY);//创建一个二次贝塞尔曲线对象
                     g2d.draw(curve);
 
                     // 绘制箭头
-                    double angle = Math.atan2(endY - ctrlY, endX - ctrlX);
+                    double angle = Math.atan2(endY - ctrlY, endX - ctrlX);//计算出箭头方向的角度
                     int arrowSize = 8;
-                    int arrowX = (int) (endX - arrowSize * Math.cos(angle));
-                    int arrowY = (int) (endY - arrowSize * Math.sin(angle));
+                    int arrowX = (int) (endX - arrowSize * Math.cos(angle));//箭头尖部x坐标
+                    int arrowY = (int) (endY - arrowSize * Math.sin(angle));//箭头尖部y坐标
                     g2d.drawLine(endX, endY, arrowX, arrowY);
-                    int dx = (int) (arrowSize * Math.cos(angle + Math.PI / 6));
-                    int dy = (int) (arrowSize * Math.sin(angle + Math.PI / 6));
+                    int dx = (int) (arrowSize * Math.cos(angle + Math.PI / 6));//箭头两侧边缘x坐标偏移量
+                    int dy = (int) (arrowSize * Math.sin(angle + Math.PI / 6));//箭头两侧边缘y坐标偏移量
                     g2d.drawLine(arrowX, arrowY, arrowX - dx, arrowY - dy);
                     g2d.drawLine(arrowX, arrowY, arrowX - dy, arrowY - dx);
 
@@ -279,12 +281,13 @@ public class DirectedGraphDrawer extends JPanel {
         }
 
         g2d.setColor(Color.BLUE);
+        //如果计算了最短路径，则将最短路径用蓝色标出
         for (int i = 0; i < shortestPathVertices.size() - 1; i++) {
             int startVertexIndex = shortestPathVertices.get(i);
             int endVertexIndex = shortestPathVertices.get(i + 1);
 
-            int startX = startVertexIndex * 100 + 15;
-            int endX = endVertexIndex * 100 + 15;
+            int startX = startVertexIndex * 100 + 15;// 起始顶点x坐标
+            int endX = endVertexIndex * 100 + 15;// 目标顶点x坐标
             int startY, endY, ctrlX, ctrlY;
 
             if (startX - endX < 0) {
@@ -299,48 +302,54 @@ public class DirectedGraphDrawer extends JPanel {
                 ctrlY = (startY + endY) / 2 + Math.abs(endX - startX) / 4; // 控制点y坐标，可以根据需要调整曲线形状
             }
 
-            QuadCurve2D curve = new QuadCurve2D.Double(startX, startY, ctrlX, ctrlY, endX, endY);
+            QuadCurve2D curve = new QuadCurve2D.Double(startX, startY, ctrlX, ctrlY, endX, endY);//创建一个二次贝塞尔曲线对象
             g2d.draw(curve);
 
             // 绘制箭头
-            double angle = Math.atan2(endY - ctrlY, endX - ctrlX);
+            double angle = Math.atan2(endY - ctrlY, endX - ctrlX);//计算出箭头方向的角度
             int arrowSize = 8;
-            int arrowX = (int) (endX - arrowSize * Math.cos(angle));
-            int arrowY = (int) (endY - arrowSize * Math.sin(angle));
+            int arrowX = (int) (endX - arrowSize * Math.cos(angle));//箭头尖部x坐标
+            int arrowY = (int) (endY - arrowSize * Math.sin(angle));//箭头尖部y坐标
             g2d.drawLine(endX, endY, arrowX, arrowY);
-            int dx = (int) (arrowSize * Math.cos(angle + Math.PI / 6));
-            int dy = (int) (arrowSize * Math.sin(angle + Math.PI / 6));
+            int dx = (int) (arrowSize * Math.cos(angle + Math.PI / 6));//箭头两侧边缘x坐标偏移量
+            int dy = (int) (arrowSize * Math.sin(angle + Math.PI / 6));//箭头两侧边缘y坐标偏移量
             g2d.drawLine(arrowX, arrowY, arrowX - dx, arrowY - dy);
             g2d.drawLine(arrowX, arrowY, arrowX - dy, arrowY - dx);
         }
 
     }
 
+    //显示有向图
+    private void showDirectedGraph(int[][] graph, JFrame frame) {
+        frame.setVisible(true);
+    }
+
+    //查询桥接词
     private String queryBridgeWords(String word1, String word2) {
         bridgeWordsSentence = "";
-        if ((!singleWords.contains(word1)) && (!singleWords.contains(word2))) {
+        if ((!singleWords.contains(word1)) && (!singleWords.contains(word2))) {//如果输入了文本外的单词
             return "No \"" + word1 + "\" and \"" + word2 + "\" in the graph!";
         } else if (!singleWords.contains(word1)) {
             return "No \"" + word1 + "\" in the graph!";
         } else if (!singleWords.contains(word2)) {
             return "No \"" + word2 + "\" in the graph!";
         }
-        Set<String> bridgeWords = new HashSet<>();
+        Set<String> bridgeWords = new HashSet<>();//存储所有桥接词
         for (int i = 0; i < graph[index.get(word1)].length; i++) {
             if (graph[index.get(word1)][i] > 0 && graph[index.get(word1)][i] < Integer.MAX_VALUE && graph[i][index.get(word2)] > 0 && graph[i][index.get(word2)] < Integer.MAX_VALUE) {
                 bridgeWords.add(singleWords.get(i));
             }
         }
-        if (bridgeWords.isEmpty()) {
+        if (bridgeWords.isEmpty()) {//如果没有桥接词
             return "No bridge words from \"" + word1 + "\" to \"" + word2 + "\"!";
         }
         String res = "";
         String[] bridgeWordsList = bridgeWords.toArray(new String[0]);
-        if (bridgeWordsList.length == 1) {
+        if (bridgeWordsList.length == 1) {//如果只有一个桥接词
             res = bridgeWordsList[0];
-        } else if (bridgeWordsList.length == 2) {
+        } else if (bridgeWordsList.length == 2) {//如果有两个桥接词
             res = bridgeWordsList[0] + " and " + bridgeWordsList[1];
-        } else {
+        } else {//如果有三个及以上桥接词
             for (int i = 0; i < bridgeWordsList.length - 2; i++) {
                 res += bridgeWordsList[i] + ",";
             }
@@ -356,113 +365,64 @@ public class DirectedGraphDrawer extends JPanel {
         return "The bridge words from \"" + word1 + "\" to \"" + word2 + "\" are:" + res + ".";
     }
 
+    //根据桥接词生成新文本
     private String generateNewText(String inputText) {
-        String[] textList = inputText.split("\\s+");
+        String[] textList = inputText.split("\\s+");//将输入文本按空格进行分割
         String res = "";
         for (int i = 0; i < textList.length - 1; i++) {
             res += textList[i] + " ";
             queryBridgeWords(textList[i], textList[i + 1]);
             if (bridgeWordsSentence != "") {
-                res += bridgeWordsSentence.split("\\s+")[0] + " ";
+                res += bridgeWordsSentence.split("\\s+")[0] + " ";//插入桥接词
             }
         }
         res += textList[textList.length - 1];
         return res;
     }
 
+    //计算两个单词之间的最短路径
     private String calcShortestPath(String word1, String word2) {
         int src, dst;
         if (word2 != "") {
-            if ((!singleWords.contains(word1)) && (!singleWords.contains(word2))) {
+            if ((!singleWords.contains(word1)) && (!singleWords.contains(word2))) {//如果单词1和单词2都不在文本中
                 System.out.println("No \"" + word1 + "\" and \"" + word2 + "\" in the graph!");
                 return "";
-            } else if (!singleWords.contains(word1)) {
+            } else if (!singleWords.contains(word1)) {//如果单词1不在文本中，单词2在文本中
                 System.out.println("No \"" + word1 + "\" in the graph!");
                 return "";
-            } else if (!singleWords.contains(word2)) {
+            } else if (!singleWords.contains(word2)) {//如果单词1在文本中，单词2不在文本中
                 System.out.println("No \"" + word2 + "\" in the graph!");
                 return "";
             }
             src = index.get(word1);
             dst = index.get(word2);
         } else {
-            if (!singleWords.contains(word1)) {
+            if (!singleWords.contains(word1)) {//如果单词1不在文本中
                 System.out.println("No \"" + word1 + "\" in the graph!");
                 return "";
             }
             src = index.get(word1);
             dst = -1;
         }
-        if (dijkstra(src, dst) == -1) {
+        if (dijkstra(src, dst) == -1) {//查找失败
             return "";
         }
         return "success";
     }
 
-    private void calcAllShortestPath(String word1, String word2) {
-        int src, dst;
-        if ((!singleWords.contains(word1)) && (!singleWords.contains(word2))) {
-            System.out.println("No \"" + word1 + "\" and \"" + word2 + "\" in the graph!");
-            return;
-        } else if (!singleWords.contains(word1)) {
-            System.out.println("No \"" + word1 + "\" in the graph!");
-            return;
-        } else if (!singleWords.contains(word2)) {
-            System.out.println("No \"" + word2 + "\" in the graph!");
-            return;
-        }
-        src = index.get(word1);
-        dst = index.get(word2);
-        dfs(src, dst, "", 0);
-        if (allShortestPath.size() == 0) {
-            System.out.println("\"" + singleWords.get(src) + "\" to \"" + singleWords.get(dst) + "\" are inaccessible.");
-        } else {
-            int minLength = Integer.MAX_VALUE;
-            for (int i = 0; i < allShortestPath.size(); i++) {
-                if (allShortestPath.get(i).getValue() < minLength) {
-                    minLength = allShortestPath.get(i).getValue();
-                }
-            }
-            for (int i = 0; i < allShortestPath.size(); i++) {
-                if (allShortestPath.get(i).getValue() == minLength) {
-                    String[] path = allShortestPath.get(i).getKey().split("\\s+");
-                    String aPath = path[1];
-                    for (int i1 = 2; i1 < path.length; i1++) {
-                        aPath += "->" + path[i1];
-                    }
-                    System.out.println(aPath + "  最短距离:" + allShortestPath.get(i).getValue());
-                }
-            }
-        }
-    }
-
-    private void dfs(int current, int dst, String path, int length) {
-        dfsVisited[current] = true;
-        path += " " + singleWords.get(current);
-        if (current == dst) {
-            allShortestPath.add(new Pair<>(path, length));
-        } else {
-            for (int i = 0; i < graph.length; i++) {
-                if (graph[current][i] > 0 && graph[current][i] < Integer.MAX_VALUE && !dfsVisited[i]) {
-                    dfs(i, dst, path, length + graph[current][i]);
-                }
-            }
-        }
-        dfsVisited[current] = false;
-    }
-
+    //用dijkstra算法计算两个顶点间的最短路径
     private int dijkstra(int src, int dst) {
         int n = graph.length;
-        int[] dist = new int[n];
-        int[] lastNode = new int[n];
-        boolean[] visited = new boolean[n];
+        int[] dist = new int[n];//记录src到各顶点的最短距离
+        int[] lastNode = new int[n];//记录最短路径上的倒数第二个顶点
+        boolean[] visited = new boolean[n];//顶点访问记录
 
         Arrays.fill(dist, Integer.MAX_VALUE);
         Arrays.fill(lastNode, src);
         dist[src] = 0;
 
         for (int i = 0; i < n - 1; i++) {
-            int u = minDistance(dist, visited);
+            int u = minDistanceNodeIndex(dist, visited);
             visited[u] = true;
 
             for (int v = 0; v < n; v++) {
@@ -472,10 +432,10 @@ public class DirectedGraphDrawer extends JPanel {
                 }
             }
         }
-        if (dst >= 0) {
+        if (dst >= 0) {//执行功能5，打印两个单词间的任意一条最短历经
             if (dist[dst] != Integer.MAX_VALUE) {
                 printSolution(src, dst, lastNode, dist);
-                shortestPathVertices.clear();
+                shortestPathVertices.clear();//用于在有向图上用蓝色标注出最短路径
                 int i = dst;
                 while (i != src) {
                     shortestPathVertices.add(0, i);
@@ -487,7 +447,7 @@ public class DirectedGraphDrawer extends JPanel {
                 System.out.println("\"" + singleWords.get(src) + "\" to \"" + singleWords.get(dst) + "\" are inaccessible.");
                 return -1;
             }
-        } else {
+        } else {//执行功能52，打印一个单词到图中所有其他单词的（任意一条）最短路径
             for (int i = 0; i < n; i++) {
                 if (i != src) {
                     if (dist[i] != Integer.MAX_VALUE) {
@@ -502,8 +462,63 @@ public class DirectedGraphDrawer extends JPanel {
 
     }
 
+    //计算两个单词之间所有可能的最短路径
+    private void calcAllShortestPath(String word1, String word2) {
+        int src, dst;
+        if ((!singleWords.contains(word1)) && (!singleWords.contains(word2))) {//如果单词1和单词2都不在文本中
+            System.out.println("No \"" + word1 + "\" and \"" + word2 + "\" in the graph!");
+            return;
+        } else if (!singleWords.contains(word1)) {//如果单词1不在文本中
+            System.out.println("No \"" + word1 + "\" in the graph!");
+            return;
+        } else if (!singleWords.contains(word2)) {//如果单词2不在文本中
+            System.out.println("No \"" + word2 + "\" in the graph!");
+            return;
+        }
+        src = index.get(word1);
+        dst = index.get(word2);
+        dfs(src, dst, "", 0);
+        if (allPath.size() == 0) {//没有路径
+            System.out.println("\"" + singleWords.get(src) + "\" to \"" + singleWords.get(dst) + "\" are inaccessible.");
+        } else {//打印所有路径中所有的最短路径
+            int minLength = Integer.MAX_VALUE;
+            for (int i = 0; i < allPath.size(); i++) {//找到最短路径长度
+                if (allPath.get(i).getValue() < minLength) {
+                    minLength = allPath.get(i).getValue();
+                }
+            }
+            for (int i = 0; i < allPath.size(); i++) {//打印所有最短路径
+                if (allPath.get(i).getValue() == minLength) {
+                    String[] path = allPath.get(i).getKey().split("\\s+");
+                    String aPath = path[1];
+                    for (int i1 = 2; i1 < path.length; i1++) {
+                        aPath += "->" + path[i1];
+                    }
+                    System.out.println(aPath + "  最短距离:" + allPath.get(i).getValue());
+                }
+            }
+            allPath.clear();
+        }
+    }
+
+    //使用深度优先搜索算法计算两个单词间所有可能的最短路径
+    private void dfs(int current, int dst, String path, int length) {
+        dfsVisited[current] = true;//顶点访问记录
+        path += " " + singleWords.get(current);
+        if (current == dst) {
+            allPath.add(new Pair<>(path, length));//找到一条路径，加入集合中
+        } else {
+            for (int i = 0; i < graph.length; i++) {
+                if (graph[current][i] > 0 && graph[current][i] < Integer.MAX_VALUE && !dfsVisited[i]) {
+                    dfs(i, dst, path, length + graph[current][i]);
+                }
+            }
+        }
+        dfsVisited[current] = false;
+    }
+
     // 找到未访问顶点中距离起点最近的顶点
-    private int minDistance(int[] dist, boolean[] visited) {
+    private int minDistanceNodeIndex(int[] dist, boolean[] visited) {
         int min = Integer.MAX_VALUE;
         int minIndex = -1;
 
@@ -528,9 +543,10 @@ public class DirectedGraphDrawer extends JPanel {
         System.out.println(path + "  最短长度:" + dist[dst]);
     }
 
+    //随机游走
     private String randomWalk() {
         Random random = new Random();
-        int srcNo = random.nextInt(singleWords.size());
+        int srcNo = random.nextInt(singleWords.size());//随机选取起始单词
         Set<Pair<String, String>> set = new HashSet<>();
         String reText = "";
         reText += singleWords.get(srcNo);
@@ -541,21 +557,21 @@ public class DirectedGraphDrawer extends JPanel {
                     flag = 1;
                 }
             }
-            if (flag == 0) {
+            if (flag == 0) {//此时没有可达的下一个单词，则结束游走
                 break;
             }
-            int nextNo = random.nextInt(singleWords.size());
+            int nextNo = random.nextInt(singleWords.size());//速记选取下一步的单词
             while (graph[srcNo][nextNo] == 0 || graph[srcNo][nextNo] == Integer.MAX_VALUE) {
                 nextNo = random.nextInt(singleWords.size());
             }
-            if (set.contains(new Pair<String, String>(singleWords.get(srcNo), singleWords.get(nextNo)))) {
+            if (set.contains(new Pair<String, String>(singleWords.get(srcNo), singleWords.get(nextNo)))) {//如果路径重复，则结束游走
                 reText += " " + singleWords.get(nextNo);
                 break;
             }
             set.add(new Pair<String, String>(singleWords.get(srcNo), singleWords.get(nextNo)));
             reText += " " + singleWords.get(nextNo);
-            srcNo = nextNo;
-            System.out.println("是否提前结束(y/n):");
+            srcNo = nextNo;//更新起始单词
+            System.out.println("是否提前结束(y/n):");//询问是否提前结束游走
             Scanner scanner2 = new Scanner(System.in);
             String sFlag = scanner2.next();
             if (sFlag.equals("y")) {
