@@ -196,6 +196,7 @@ public class DirectedGraphDrawer extends JPanel {
                     //退出
                     return;
                 default:
+                    //输入了菜单选项以外的选项
                     System.out.println("无效的选择，请重新选择：");
             }
         }
