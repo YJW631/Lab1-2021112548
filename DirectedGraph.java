@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
-public class DirectedGraphDrawer extends JPanel {
+public class DirectedGraph extends JPanel {
 
     int[][] graph;//有向图邻接矩阵
 
@@ -26,7 +26,7 @@ public class DirectedGraphDrawer extends JPanel {
     ArrayList<Pair<String, Integer>> allPath;//记录有向图中两点间所有可能的路径
 
 
-    DirectedGraphDrawer(HashMap<String, Integer> index, int[][] graph, ArrayList<String> singleWords) {
+    DirectedGraph(HashMap<String, Integer> index, int[][] graph, ArrayList<String> singleWords) {
         this.index = index;
         this.graph = graph;
         this.singleWords = singleWords;
@@ -98,8 +98,8 @@ public class DirectedGraphDrawer extends JPanel {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(singleWordsTemp.size() * 100, 600);
 
-        // 创建DirectedGraphDrawer实例并添加到窗口中
-        DirectedGraphDrawer graphDrawer = new DirectedGraphDrawer(indexTemp, graphTemp, singleWordsTemp);
+        // 创建DirectedGraph实例并添加到窗口中
+        DirectedGraph graphDrawer = new DirectedGraph(indexTemp, graphTemp, singleWordsTemp);
         frame.add(graphDrawer);
 
         //显示菜单栏
