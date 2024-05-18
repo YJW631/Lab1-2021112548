@@ -373,7 +373,10 @@ public class DirectedGraphDrawer extends JPanel {
             res += textList[i] + " ";
             queryBridgeWords(textList[i], textList[i + 1]);
             if (bridgeWordsSentence != "") {
-                res += bridgeWordsSentence.split("\\s+")[0] + " ";//插入桥接词
+                String[] bridgeWordsList = bridgeWordsSentence.split("\\s+");
+                Random random = new Random();
+                int bridgeWordsIndex=random.nextInt(bridgeWordsList.length);
+                res += bridgeWordsList[bridgeWordsIndex]+" ";//插入桥接词
             }
         }
         res += textList[textList.length - 1];
