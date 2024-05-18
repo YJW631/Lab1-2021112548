@@ -99,8 +99,8 @@ public class DirectedGraph extends JPanel {
         frame.setSize(singleWordsTemp.size() * 100, 600);
 
         // 创建DirectedGraph实例并添加到窗口中
-        DirectedGraph graphDrawer = new DirectedGraph(indexTemp, graphTemp, singleWordsTemp);
-        frame.add(graphDrawer);
+        DirectedGraph directedGraph = new DirectedGraph(indexTemp, graphTemp, singleWordsTemp);
+        frame.add(directedGraph);
 
         //显示菜单栏
         while (true) {
@@ -122,7 +122,7 @@ public class DirectedGraph extends JPanel {
                     System.out.println("文本已读入并生成有向图！");
                     break;
                 case 2:
-                    graphDrawer.showDirectedGraph(graphTemp, frame);//显示有向图
+                    directedGraph.showDirectedGraph(graphTemp, frame);//显示有向图
                     saveImage(frame, "directed_graph.png");//将有向图以图片的形式保存到磁盘
                     break;
                 case 3:
@@ -133,7 +133,7 @@ public class DirectedGraph extends JPanel {
                     word1 = scanner.next();
                     System.out.println("请输入word2:");
                     word2 = scanner.next();
-                    System.out.println(graphDrawer.queryBridgeWords(word1, word2));
+                    System.out.println(directedGraph.queryBridgeWords(word1, word2));
                     break;
                 case 4:
                     //根据桥接词生成新文本
@@ -143,7 +143,7 @@ public class DirectedGraph extends JPanel {
                     if (scanner1.hasNextLine()) {
                         inputText = scanner1.nextLine();
                     }
-                    System.out.println(graphDrawer.generateNewText(inputText));
+                    System.out.println(directedGraph.generateNewText(inputText));
                     break;
                 case 5:
                     //计算两个单词之间的最短路径
@@ -152,11 +152,11 @@ public class DirectedGraph extends JPanel {
                     srcWord = scanner.next();
                     System.out.println("请输入第二个单词:");
                     desWords = scanner.next();
-                    if (graphDrawer.calcShortestPath(srcWord, desWords) == "success") {
+                    if (directedGraph.calcShortestPath(srcWord, desWords) == "success") {
                         JFrame reFrame = new JFrame("Directed Graph");
                         reFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         reFrame.setSize(singleWordsTemp.size() * 100, 600);
-                        reFrame.add(graphDrawer);
+                        reFrame.add(directedGraph);
                         reFrame.setVisible(true);
                         saveImage(reFrame, "re_directed_graph.png");
                     }
@@ -168,14 +168,14 @@ public class DirectedGraph extends JPanel {
                     srcWord1 = scanner.next();
                     System.out.println("请输入第二个单词:");
                     desWords1 = scanner.next();
-                    graphDrawer.calcAllShortestPath(srcWord1, desWords1);
+                    directedGraph.calcAllShortestPath(srcWord1, desWords1);
                     break;
                 case 52:
                     //计算一个节点到图中其他任一节点的最短路径
                     String word;
                     System.out.println("请输入单词:");
                     word = scanner.next();
-                    graphDrawer.calcShortestPath(word, "");
+                    directedGraph.calcShortestPath(word, "");
                     break;
                 case 6:
                     //随机游走
@@ -185,7 +185,7 @@ public class DirectedGraph extends JPanel {
                             file.createNewFile();
                         }
                         FileOutputStream outStream = new FileOutputStream(file);
-                        outStream.write(graphDrawer.randomWalk().getBytes());
+                        outStream.write(directedGraph.randomWalk().getBytes());
                         outStream.flush();
                         outStream.close();
                     } catch (Exception e) {
