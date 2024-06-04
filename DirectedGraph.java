@@ -1,13 +1,19 @@
-import javafx.util.Pair;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.QuadCurve2D;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import javax.imageio.ImageIO;
+
+import javafx.util.Pair;
+
 import java.util.*;
 import java.util.List;
+import javax.swing.*;
 
 public class DirectedGraph extends JPanel {
 
@@ -16,7 +22,6 @@ public class DirectedGraph extends JPanel {
     HashMap<String, Integer> index;//记录图的顶点名和索引直接的对应关系
 
     ArrayList<String> singleWords;//记录文本中不重复的单词
-
     String bridgeWordsSentence;//记录所有桥接词
 
     List<Integer> shortestPathVertices;//记录最短路径
@@ -68,7 +73,7 @@ public class DirectedGraph extends JPanel {
             e.printStackTrace();
         }
         ArrayList<String> singleWordsTemp = new ArrayList<>();
-        for (int i = 0; i < wordArrayList.size(); i++) {//将不重复的单词存入singleWordsTemp中，最终传给singleWords。
+        for (int i = 0; i < wordArrayList.size(); i++) { //将不重复的单词存入singleWordsTemp中，最终传给singleWords。
             if (!singleWordsTemp.contains(wordArrayList.get(i))) {
                 singleWordsTemp.add(wordArrayList.get(i));
             }
@@ -127,9 +132,10 @@ public class DirectedGraph extends JPanel {
                     break;
                 case 3:
                     //查询桥接词
-                    String word1, word2;
+                    String word1;
                     System.out.println("查询桥接词:");
                     System.out.println("请输入word1:");
+                    String word2;
                     word1 = scanner.next();
                     System.out.println("请输入word2:");
                     word2 = scanner.next();
@@ -147,9 +153,10 @@ public class DirectedGraph extends JPanel {
                     break;
                 case 5:
                     //计算两个单词之间的最短路径
-                    String srcWord, desWords;
+                    String srcWord;
                     System.out.println("请输入第一个单词:");
                     srcWord = scanner.next();
+                    String desWords;
                     System.out.println("请输入第二个单词:");
                     desWords = scanner.next();
                     if (directedGraph.calcShortestPath(srcWord, desWords) == "success") {
@@ -163,9 +170,10 @@ public class DirectedGraph extends JPanel {
                     break;
                 case 51:
                     //计算两个单词之间的所有可能的最短路径
-                    String srcWord1, desWords1;
+                    String srcWord1;
                     System.out.println("请输入第一个单词:");
                     srcWord1 = scanner.next();
+                    String desWords1;
                     System.out.println("请输入第二个单词:");
                     desWords1 = scanner.next();
                     directedGraph.calcAllShortestPath(srcWord1, desWords1);
@@ -327,7 +335,7 @@ public class DirectedGraph extends JPanel {
     //查询桥接词
     private String queryBridgeWords(String word1, String word2) {
         bridgeWordsSentence = "";
-        if ((!singleWords.contains(word1)) && (!singleWords.contains(word2))) {//如果输入了文本外的单词
+        if ((!singleWords.contains(word1)) && (!singleWords.contains(word2))) { //如果输入了文本外的单词
             return "No \"" + word1 + "\" and \"" + word2 + "\" in the graph!";
         } else if (!singleWords.contains(word1)) {
             return "No \"" + word1 + "\" in the graph!";
@@ -340,16 +348,16 @@ public class DirectedGraph extends JPanel {
                 bridgeWords.add(singleWords.get(i));
             }
         }
-        if (bridgeWords.isEmpty()) {//如果没有桥接词
+        if (bridgeWords.isEmpty()) { //如果没有桥接词
             return "No bridge words from \"" + word1 + "\" to \"" + word2 + "\"!";
         }
         String res = "";
         String[] bridgeWordsList = bridgeWords.toArray(new String[0]);
-        if (bridgeWordsList.length == 1) {//如果只有一个桥接词
+        if (bridgeWordsList.length == 1) { //如果只有一个桥接词
             res = bridgeWordsList[0];
-        } else if (bridgeWordsList.length == 2) {//如果有两个桥接词
+        } else if (bridgeWordsList.length == 2) { //如果有两个桥接词
             res = bridgeWordsList[0] + " and " + bridgeWordsList[1];
-        } else {//如果有三个及以上桥接词
+        } else { //如果有三个及以上桥接词
             for (int i = 0; i < bridgeWordsList.length - 2; i++) {
                 res += bridgeWordsList[i] + ",";
             }
@@ -375,8 +383,8 @@ public class DirectedGraph extends JPanel {
             if (bridgeWordsSentence != "") {
                 String[] bridgeWordsList = bridgeWordsSentence.split("\\s+");
                 Random random = new Random();
-                int bridgeWordsIndex=random.nextInt(bridgeWordsList.length);
-                res += bridgeWordsList[bridgeWordsIndex]+" ";//插入桥接词
+                int bridgeWordsIndex = random.nextInt(bridgeWordsList.length);
+                res += bridgeWordsList[bridgeWordsIndex] + " ";//插入桥接词
             }
         }
         res += textList[textList.length - 1];
@@ -387,28 +395,28 @@ public class DirectedGraph extends JPanel {
     private String calcShortestPath(String word1, String word2) {
         int src, dst;
         if (word2 != "") {
-            if ((!singleWords.contains(word1)) && (!singleWords.contains(word2))) {//如果单词1和单词2都不在文本中
+            if ((!singleWords.contains(word1)) && (!singleWords.contains(word2))) { //如果单词1和单词2都不在文本中
                 System.out.println("No \"" + word1 + "\" and \"" + word2 + "\" in the graph!");
-                return "";
-            } else if (!singleWords.contains(word1)) {//如果单词1不在文本中，单词2在文本中
+                return "No \"" + word1 + "\" and \"" + word2 + "\" in the graph!";
+            } else if (!singleWords.contains(word1)) { //如果单词1不在文本中，单词2在文本中
                 System.out.println("No \"" + word1 + "\" in the graph!");
-                return "";
-            } else if (!singleWords.contains(word2)) {//如果单词1在文本中，单词2不在文本中
+                return "No \"" + word1 + "\" in the graph!";
+            } else if (!singleWords.contains(word2)) { //如果单词1在文本中，单词2不在文本中
                 System.out.println("No \"" + word2 + "\" in the graph!");
-                return "";
+                return "No \"" + word2 + "\" in the graph!";
             }
             src = index.get(word1);
             dst = index.get(word2);
         } else {
-            if (!singleWords.contains(word1)) {//如果单词1不在文本中
+            if (!singleWords.contains(word1)) { //如果单词1不在文本中
                 System.out.println("No \"" + word1 + "\" in the graph!");
-                return "";
+                return "No \"" + word1 + "\" in the graph!";
             }
             src = index.get(word1);
             dst = -1;
         }
-        if (dijkstra(src, dst) == -1) {//查找失败
-            return "";
+        if (dijkstra(src, dst) == -1) { //查找失败
+            return "No shortest path between \"" + word1 + "\" and \"" + word2 + "\" in the graph!";
         }
         return "success";
     }
@@ -435,7 +443,7 @@ public class DirectedGraph extends JPanel {
                 }
             }
         }
-        if (dst >= 0) {//执行功能5，打印两个单词间的任意一条最短历经
+        if (dst >= 0) { //执行功能5，打印两个单词间的任意一条最短历经
             if (dist[dst] != Integer.MAX_VALUE) {
                 printSolution(src, dst, lastNode, dist);
                 shortestPathVertices.clear();//用于在有向图上用蓝色标注出最短路径
@@ -450,7 +458,7 @@ public class DirectedGraph extends JPanel {
                 System.out.println("\"" + singleWords.get(src) + "\" to \"" + singleWords.get(dst) + "\" are inaccessible.");
                 return -1;
             }
-        } else {//执行功能52，打印一个单词到图中所有其他单词的（任意一条）最短路径
+        } else { //执行功能52，打印一个单词到图中所有其他单词的（任意一条）最短路径
             for (int i = 0; i < n; i++) {
                 if (i != src) {
                     if (dist[i] != Integer.MAX_VALUE) {
@@ -468,29 +476,29 @@ public class DirectedGraph extends JPanel {
     //计算两个单词之间所有可能的最短路径
     private void calcAllShortestPath(String word1, String word2) {
         int src, dst;
-        if ((!singleWords.contains(word1)) && (!singleWords.contains(word2))) {//如果单词1和单词2都不在文本中
+        if ((!singleWords.contains(word1)) && (!singleWords.contains(word2))) { //如果单词1和单词2都不在文本中
             System.out.println("No \"" + word1 + "\" and \"" + word2 + "\" in the graph!");
             return;
-        } else if (!singleWords.contains(word1)) {//如果单词1不在文本中
+        } else if (!singleWords.contains(word1)) { //如果单词1不在文本中
             System.out.println("No \"" + word1 + "\" in the graph!");
             return;
-        } else if (!singleWords.contains(word2)) {//如果单词2不在文本中
+        } else if (!singleWords.contains(word2)) { //如果单词2不在文本中
             System.out.println("No \"" + word2 + "\" in the graph!");
             return;
         }
         src = index.get(word1);
         dst = index.get(word2);
         dfs(src, dst, "", 0);
-        if (allPath.size() == 0) {//没有路径
+        if (allPath.size() == 0) { //没有路径
             System.out.println("\"" + singleWords.get(src) + "\" to \"" + singleWords.get(dst) + "\" are inaccessible.");
-        } else {//打印所有路径中所有的最短路径
+        } else { //打印所有路径中所有的最短路径
             int minLength = Integer.MAX_VALUE;
-            for (int i = 0; i < allPath.size(); i++) {//找到最短路径长度
+            for (int i = 0; i < allPath.size(); i++) { //找到最短路径长度
                 if (allPath.get(i).getValue() < minLength) {
                     minLength = allPath.get(i).getValue();
                 }
             }
-            for (int i = 0; i < allPath.size(); i++) {//打印所有最短路径
+            for (int i = 0; i < allPath.size(); i++) { //打印所有最短路径
                 if (allPath.get(i).getValue() == minLength) {
                     String[] path = allPath.get(i).getKey().split("\\s+");
                     String aPath = path[1];
@@ -560,14 +568,14 @@ public class DirectedGraph extends JPanel {
                     flag = 1;
                 }
             }
-            if (flag == 0) {//此时没有可达的下一个单词，则结束游走
+            if (flag == 0) { //此时没有可达的下一个单词，则结束游走
                 break;
             }
             int nextNo = random.nextInt(singleWords.size());//速记选取下一步的单词
             while (graph[srcNo][nextNo] == 0 || graph[srcNo][nextNo] == Integer.MAX_VALUE) {
                 nextNo = random.nextInt(singleWords.size());
             }
-            if (set.contains(new Pair<String, String>(singleWords.get(srcNo), singleWords.get(nextNo)))) {//如果路径重复，则结束游走
+            if (set.contains(new Pair<String, String>(singleWords.get(srcNo), singleWords.get(nextNo)))) { //如果路径重复，则结束游走
                 reText += " " + singleWords.get(nextNo);
                 break;
             }
