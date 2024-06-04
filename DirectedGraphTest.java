@@ -70,27 +70,33 @@ public class DirectedGraphTest {
     }
 
     @Test
-    public void testQueryBridgeWords() {
+    public void testQueryBridgeWords(){
         Method method = null;
         try {
-            method = DirectedGraph.class.getDeclaredMethod("calcShortestPath", String.class, String.class);
+            method = DirectedGraph.class.getDeclaredMethod("queryBridgeWords", String.class, String.class);
             method.setAccessible(true);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
         String result = null;
         try {
-            result = (String) method.invoke(directedGraph, "the", "who");
+            result = (String) method.invoke(directedGraph, "please", "life");
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-        assertEquals("success", result);
+        assertEquals("The bridge words from \"please\" to \"life\" is:love.", result);
         try {
-            result = (String) method.invoke(directedGraph, "love", "please");
+            result = (String) method.invoke(directedGraph, "love", "life");
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-        assertEquals("No shortest path between \"love\" and \"please\" in the graph!", result);
+        assertEquals("The bridge words from \"love\" to \"life\" are:of and life.", result);
+        try {
+            result = (String) method.invoke(directedGraph, "so", "love");
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        assertEquals("No bridge words from \"so\" to \"love\"!", result);
         try {
             result = (String) method.invoke(directedGraph, "love", "me");
         } catch (IllegalAccessException | InvocationTargetException e) {

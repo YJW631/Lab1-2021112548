@@ -344,7 +344,8 @@ public class DirectedGraph extends JPanel {
         }
         Set<String> bridgeWords = new HashSet<>();//存储所有桥接词
         for (int i = 0; i < graph[index.get(word1)].length; i++) {
-            if (graph[index.get(word1)][i] > 0 && graph[index.get(word1)][i] < Integer.MAX_VALUE && graph[i][index.get(word2)] > 0 && graph[i][index.get(word2)] < Integer.MAX_VALUE) {
+            if (graph[index.get(word1)][i] > 0 && graph[index.get(word1)][i] < Integer.MAX_VALUE && graph[i][index.get(word2)] > 0
+                    && graph[i][index.get(word2)] < Integer.MAX_VALUE) {
                 bridgeWords.add(singleWords.get(i));
             }
         }
