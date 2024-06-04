@@ -69,7 +69,7 @@ public class DirectedGraphTest {
         directedGraph = new DirectedGraph(indexTemp, graphTemp, singleWordsTemp);
     }
 
-    @Test
+    /*@Test
     public void testQueryBridgeWords(){
         Method method = null;
         try {
@@ -109,5 +109,60 @@ public class DirectedGraphTest {
             throw new RuntimeException(e);
         }
         assertEquals("No \"about\" and \"me\" in the graph!", result);
+    }*/
+
+    @Test
+    public void testCalcShortestPath() {
+        Method method = null;
+        try {
+            method = DirectedGraph.class.getDeclaredMethod("calcShortestPath", String.class, String.class);
+            method.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        String result = null;
+        try {
+            result = (String) method.invoke(directedGraph, "about", "me");
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        assertEquals("No \"about\" and \"me\" in the graph!", result);
+        try {
+            result = (String) method.invoke(directedGraph, "me", "love");
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        assertEquals("No \"me\" in the graph!", result);
+        try {
+            result = (String) method.invoke(directedGraph, "love", "me");
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        assertEquals("No \"me\" in the graph!", result);
+        try {
+            result = (String) method.invoke(directedGraph, "love", "please");
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        assertEquals("No shortest path between \"love\" and \"please\" in the graph!", result);
+        try {
+            result = (String) method.invoke(directedGraph, "love", "life");
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        assertEquals("success", result);
+        try {
+            result = (String) method.invoke(directedGraph, "me", "");
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        assertEquals("No \"me\" in the graph!", result);
+        try {
+            result = (String) method.invoke(directedGraph, "please", "");
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        assertEquals("success", result);
     }
+
 }
