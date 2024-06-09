@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
@@ -69,7 +68,7 @@ public class DirectedGraphTest {
         directedGraph = new DirectedGraph(indexTemp, graphTemp, singleWordsTemp);
     }
 
-    /*@Test
+    @Test
     public void testQueryBridgeWords(){
         Method method = null;
         try {
@@ -109,7 +108,7 @@ public class DirectedGraphTest {
             throw new RuntimeException(e);
         }
         assertEquals("No \"about\" and \"me\" in the graph!", result);
-    }*/
+    }
 
     @Test
     public void testCalcShortestPath() {

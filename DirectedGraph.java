@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
@@ -378,12 +379,12 @@ public class DirectedGraph extends JPanel {
     private String generateNewText(String inputText) {
         String[] textList = inputText.split("\\s+");//将输入文本按空格进行分割
         String res = "";
+        SecureRandom random = new SecureRandom();
         for (int i = 0; i < textList.length - 1; i++) {
             res += textList[i] + " ";
             queryBridgeWords(textList[i], textList[i + 1]);
             if (bridgeWordsSentence != "") {
                 String[] bridgeWordsList = bridgeWordsSentence.split("\\s+");
-                Random random = new Random();
                 int bridgeWordsIndex = random.nextInt(bridgeWordsList.length);
                 res += bridgeWordsList[bridgeWordsIndex] + " ";//插入桥接词
             }
@@ -557,7 +558,7 @@ public class DirectedGraph extends JPanel {
 
     //随机游走
     private String randomWalk() {
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
         int srcNo = random.nextInt(singleWords.size());//随机选取起始单词
         Set<Pair<String, String>> set = new HashSet<>();
         String reText = "";
